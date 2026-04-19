@@ -244,6 +244,21 @@ img {
   border-radius: 25px; 
   box-shadow: 0 12px 30px rgba(0,0,0,0.15); 
 }
+
+.enqueteLink {
+  display: block;
+  margin-top: 25px;
+  padding: 10px;
+  color: #676666;
+  font-size: 18px;
+  text-decoration: underline;
+  transition: 0.3s;
+}
+
+.enqueteLink:hover {
+  color: #ff6b9a; /* ホバーした時にピンク色に */
+}
+
 </style>
 </head>
 
@@ -274,15 +289,19 @@ img {
     <div class="section" style="animation-delay:0.6s;"><b>弱点</b><p id="bad"></p></div>
     <div class="section" style="animation-delay:0.8s;"><b>アドバイス</b><p id="advice"></p></div>
 
-    <br>
-    <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする✨</button>
+   <br>
+    <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする</button>
     <button class="retryBtn" onclick="location.reload()">もう一度診断する</button>
+
+    <a href="https://forms.gle/jbtjXMtidgLBtDqs5" target="_blank" class="enqueteLink">
+      📋 診断結果なんだった？？アンケートに答えて欲しいです！ 💖
+    </a>
   </div>
 
 </div>
 
 <script>
-let name="", index=0;
+let name="", index=0;s
 let A=0, C=0, R=0;
 let currentType = "";
 
@@ -384,7 +403,7 @@ function showResult(){
     AIR: "くるくる全力ハムスタータイプ",
     AIL: "負けパンダタイプ",
     PCR: "余裕かまし猫タイプ",
-    PCL: "高嶺の鹿タイプ",
+    PCL: "高嶺のシカタイプ",
     PIR: "残念ウサギタイプ",
     PIL: "マイペース亀タイプ"
   };
@@ -407,14 +426,14 @@ function showResult(){
 
   // 画像設定
   const images = {
-    ACR: "img/IMG_4315.JPG",
-    ACL: "img/IMG_4318.JPG",
-    AIR: "img/IMG_4319.JPG",
-    AIL: "img/IMG_4315.JPG",
-    PCR: "img/IMG_4314.JPG",
-    PCL: "img/IMG_4315.JPG",
-    PIR: "img/IMG_4314.JPG",
-    PIL: "img/IMG_4315.JPG"
+    ACR: "IMG_4315.JPG",
+    ACL: "IMG_4318.JPG",
+    AIR: "IMG_4319.JPG",
+    AIL: "IMG_4315.JPG",
+    PCR: "IMG_4314.JPG",
+    PCL: "IMG_4315.JPG",
+    PIR: "IMG_4314.JPG",
+    PIL: "IMG_4315.JPG"
   };
   document.getElementById("resultImage").src = images[currentType] || images["ACR"];
 
