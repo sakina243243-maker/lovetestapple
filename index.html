@@ -87,15 +87,27 @@ animation: popIn 0.6s ease;
   -webkit-text-fill-color: transparent;
   margin: 10px auto;
   animation: pop 0.6s ease;
-
-  /* --- 横揺れ防止 ＆ 自動縮小 --- */
   display: block;
   width: 100%;
-  white-space: nowrap;      /* 改行禁止 */
-  overflow: hidden;         /* はみ出た分を隠す（これで横揺れが止まります） */
-  text-overflow: ellipsis;  /* 万が一長すぎたら「...」にする（保険） */
-  font-size: clamp(18px, 6vw, 32px); /* 最小18px〜最大32pxの間で画面幅に合わせて自動調整 */
+  overflow: hidden; /* 横揺れを強制ストップ */
   text-align: center;
+}
+
+/* 日本語名（王者ライオンタイプなど）の調整 */
+.type-jp {
+  display: block;
+  font-size: clamp(20px, 7vw, 36px); /* 画面幅に合わせて自動縮小 */
+  white-space: nowrap;
+  margin-bottom: 5px;
+}
+
+/* 英語名（ACRなど）の調整 */
+.type-en {
+  display: block;
+  font-size: 24px;
+  -webkit-text-fill-color: #555;
+  opacity: 0.7;
+  letter-spacing: 2px;
 }
 
 /* 親要素（container）に基準を設定 */
@@ -462,16 +474,8 @@ function showResult(){
   document.getElementById("resultTitle").innerText = name + "さんの結果は…";
 
   document.getElementById("typeName").innerHTML = `
-    <span style="font-size: 40px; display: block; margin-bottom: 5px;">${typeNamesJP[currentType]}</span>
-    <span style="
-      font-size: 36px; 
-      -webkit-text-fill-color: #555; 
-      font-weight: 800; 
-      display: block; 
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      opacity: 0.9;
-    ">${currentType}</span>
+    <span class="type-jp">${typeNamesJP[currentType]}</span>
+    <span class="type-en">${currentType}</span>
   `;
 
   // 画像設定
