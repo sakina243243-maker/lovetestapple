@@ -322,14 +322,14 @@ const questions=[
 
 {q:"学校生活の中で、異性のクラスメイトと話す機会がある？",axis:"R",a:[["気軽に話せる関係",5],["１日１回くらいは話す",3],["用事があるときぐらいしか話さない",-3],["全く話さないor周りに異性がいない",-5]]},
 {q:"新しく異性と知り合う機会がある？（学校・部活・遊びなど）",axis:"R",a:[["自分から新しい機会に行く",5],["きっかけがあれば ",3],["ほとんどない",-3],["まじでなんもない",-5]]},
-{q:"勉強や部活の忙しさをパーセントで表すと？",axis:"R",a:[["９０%",-5],["６０%",-3],["４０%",3],["１０% ",5]]},
+{q:"勉強や部活の忙しさをパーセントで表すと？",axis:"R",a:[["９０%",-5],["７０%",-3],["４０%",3],["１０% ",5]]},
 {q:"あなたの学校はどっち？",axis:"R",a:[["共学",5],["女子校",-5]]},
 {q:"あなたが普段過ごしているコミュニティーに男子はいる？",axis:"R",a:[["いる！",5],["いない！",-5]]}
 ];
 
 
 // 最大スコアの計算
-let totalA_max=25, totalC_max=25, totalR_max=25; 
+let totalA_max=25, totalC_max=25, totalR_max=25;
 
 function startTest() {
   const input = document.getElementById("name");
@@ -411,8 +411,7 @@ function showResult(){
   };
 
   document.getElementById("resultTitle").innerText = name + "さんの結果は…";
-  
-// タイトル部分：日本語名を主役に、アルファベットを「診断タイプ」らしく強調
+
   document.getElementById("typeName").innerHTML = `
     <span style="font-size: 40px; display: block; margin-bottom: 5px;">${typeNamesJP[currentType]}</span>
     <span style="
@@ -439,7 +438,6 @@ function showResult(){
   };
   document.getElementById("resultImage").src = images[currentType] || images["ACR"];
 
-  // ※ ここにあなたの膨大な texts データを再配置してください
   const texts = {
    ACR:{
 desc:"このタイプは、恋愛において必要とされる要素である「積極性」「自己肯定感」「環境」のすべてが高い水準でそろっている、いわばかなり有利な立場にいるタイプ。",
@@ -498,9 +496,9 @@ advice:"このタイプは、いきなり恋愛しようとしなくて、ハー
   document.getElementById("advice").textContent = t.advice;
 
 // グラフ描画
-  const A_per = toPercent(A, totalA_max);
-  const C_per = toPercent(C, totalC_max);
-  const R_per = toPercent(R, totalR_max);
+ const A_per = toPercent(A, 25);
+  const C_per = toPercent(C, 25);
+  const R_per = toPercent(R, 25);
 
   const graphArea = document.getElementById("graph");
   graphArea.innerHTML = 
