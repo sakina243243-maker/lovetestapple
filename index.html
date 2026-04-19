@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>彼氏ができない原因診断</title>
+
+<style>
+/* --- 基本レイアウト --- */
+body{
+margin:0;
+font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+  background: linear-gradient(135deg, #ffd6ec, #d6f0ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #333;
+}
+
+.container{
+background:#fff;
+padding:40px;
+border-radius:25px;
+width:90%;
+max-width:600px;
+text-align:center;
+box-shadow:0 10px 30px rgba(171, 171, 171, 0.292);
+max-height:90vh;
+overflow-y:auto;
+transform: scale(1);
+animation: popIn 0.6s ease;
+}
+
+@keyframes popIn{
+0%{transform:scale(0.9);opacity:0;}
+100%{transform:scale(1);opacity:1;}
+}
+
+/* --- テキスト装飾 --- */
+.title{
+  font-size:28px;
+  background:linear-gradient(90deg,#ff6b9a,#6bbcff);
+  background-clip:text;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.subtitle{ font-size:14px; color:#888; margin-bottom:20px; }
+
+/* --- 質問文（診断中）の設定 --- */
+#question {
+  font-size: 20px;      /* 少し小さく */
+  color: #333333;          /* 文字を薄いグレーに */
+  font-weight: bold;  /* 文字を細く */
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* --- 選択肢ボタンの設定 --- */
+#choices button {
+    padding:15px;
+    margin:10px;
+    width:90%;
+    border:none;
+    font-weight: normal;
+    border-radius:20px;
+    background:#f5e8ff;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+
+/* 選択肢にマウスを乗せたとき */
+#choices button:hover {
+  background: #f5e8ff;
+  border-color: #ddd;
+}
+
+#typeName {
+  font-size: 50px;
+  font-weight: bold;
+  background: linear-gradient(90deg,#ff6b9a,#6bbcff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 10px 0;
+  display: inline-block;
+  animation: pop 0.6s ease;
+}
+
+@keyframes pop{
+0%{transform:scale(0.7);opacity:0;}
+100%{transform:scale(1);opacity:1;}
+}
+
+/* --- 入力欄 & ボタン --- */
+.nameInput {
+  padding: 15px;
+  width: 80%;
+  border-radius: 15px;
+  border: 2px solid #eee;
+  font-size: 18px;
+  outline: none;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.error-shake { animation: shake 0.3s; border-color: #ff6b6b; background: #fff0f0; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* --- ボタンのデザイン統一 --- */
+button {
+  padding: 12px;
+  margin: 8px 5%;
+  width: 90%;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+  font-family: inherit;
+}
+
+/* スタートボタン ＆ もう一度やるボタン（共通デザイン） */
+.startBtn, .retryBtn {
+  background: linear-gradient(90deg,#ff9ad5,#9ad7ff) !important;
+  color: #fff !important;
+  font-size: 18px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  padding: 16px;
+  display: block;
+  margin: 15px auto;
+}
+
+/* シェアボタン（おとなしめ） */
+.shareBtn {
+  background: #f0f0f0;
+  color: #777;
+  font-size: 14px;
+  box-shadow: none;
+  margin-top: 20px;
+  padding: 10px;
+}
+
+button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* --- グラフ (MBTI風) --- */
+.barBox { margin: 25px 0; text-align: left; animation: fadeUp 0.8s ease forwards; opacity: 0; }
+@keyframes fadeUp { to { opacity: 1; transform: translateY(0); } from { opacity: 0; transform: translateY(20px); } }
+
+.barLabel {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: 10px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.barLabel .categoryName { color: #555; font-size: 16px; }
+.barLabel .resultScore { font-size: 18px; }
+
+.bar2 {
+  position: relative;
+  height: 24px;
+  background: #eee;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.colorFill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: 1.2s cubic-bezier(.34,1.56,.64,1);
+}
+.colorFill.left { left: 0; }
+.colorFill.right { right: 0; }
+
+.indicator {
+  position: absolute;
+  top: 50%;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border: 4px solid #ccc;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: 1.2s cubic-bezier(.34,1.56,.64,1);
+  z-index: 10;
+}
+
+.axisLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  font-weight: bold;
+}
+
+/* --- 結果詳細セクション --- */
+.section {
+text-align: left;
+margin-top: 15px;
+padding: 15px;
+border-radius: 15px;
+background: #fff;
+box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+opacity: 0;
+animation: fadeUp 0.6s ease forwards;
+}
+.section b {
+display: inline-block;
+font-size: 14px;
+margin-bottom: 8px;
+padding: 4px 12px;
+border-radius: 20px;
+background: linear-gradient(90deg,#ff9ad5,#9ad7ff);
+color: #fff;
+}
+.section p { white-space: pre-line; line-height: 1.6; margin: 0; font-size: 14px; color: #444;}
+
+.hidden{ display: none; }
+/* --- 画像をさらにインパクトのあるサイズに修正 --- */
+img { 
+  width: 450px; /* さらにサイズアップ */
+  max-width: 98%; /* 画面端ギリギリまで */
+  height: auto;
+  margin: 15px 0; 
+  border-radius: 25px; 
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15); 
+}
+</style>
+</head>
+
+<body>
+<div class="container" id="app">
+
+  <div id="start">
+    <h1 class="title">彼氏ができない原因診断</h1>
+    <p class="subtitle">あなたの恋愛タイプを可視化💖</p>
+    <input id="name" placeholder="名前を入力" class="nameInput"><br><br>
+    <button class="startBtn" onclick="startTest()">診断をはじめる</button>
+  </div>
+
+  <div id="quiz" class="hidden">
+    <h2 id="question"></h2>
+    <div id="choices"></div>
+  </div>
+
+  <div id="result" class="hidden">
+    <p id="resultTitle" style="color:#888; margin-bottom:0;"></p>
+    <h1 id="typeName"></h1><br>
+    <img id="resultImage">
+
+    <div id="graph"></div>
+
+    <div class="section" style="animation-delay:0.2s;"><b>概要</b><p id="desc"></p></div>
+    <div class="section" style="animation-delay:0.4s;"><b>強み</b><p id="good"></p></div>
+    <div class="section" style="animation-delay:0.6s;"><b>弱点</b><p id="bad"></p></div>
+    <div class="section" style="animation-delay:0.8s;"><b>アドバイス</b><p id="advice"></p></div>
+
+    <br>
+    <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする✨</button>
+    <button class="retryBtn" onclick="location.reload()">もう一度診断する</button>
+  </div>
+
+</div>
+
+<script>
+let name="", index=0;
+let A=0, C=0, R=0;
+let currentType = "";
+
+const questions=[
+{q:"気になる人ができたときどうする？",axis:"A",a:[["自分から話しかける・アピールする",5],["様子を見るけどタイミングがあれば話す",3],["話したいけど何もできない",-3],["何も行動せずただ相手が来るのを待つ",-5]]},
+{q:"普段の異性とのかかわり方は？",axis:"A",a:[["自分から話しかけることが多い",5],["話しかけられたら話す",3],["あまり関わらない",-3],["自分の家族としか話さないレベル",-5]]},
+{q:"相手との予定を決めるときは？",axis:"A",a:[["自分から日程や内容を提案する",5],["お互いに案を出し合って決めたい",3],["相手がしたいことをしたい",-3],["相手に全部決めてもらいたい",-5]]},
+{q:"好きな人と話すチャンスがあったら？",axis:"A",a:[["絶対逃さず自分から話す",5],["勇気を出して話しかけてみる",3],["話せるのに見送ることが多い",-3],["絶対無理。話しかけれない",-5]]},
+{q:"好きな人の情報を知りたいときは？",axis:"A",a:[["直接聞いたり行動で知ろうとする",5],["友達の手も借りながら、自分から知ろうとする",3],["知りたい情報は友達を通して知る",-3],["知りたいなーで終わってしまう事が多い",-5]]},
+
+{q:"自分は恋愛対象としてどう思う？",axis:"C",a:[["魅力的だと思う",5],["普通かな",3],["自信がないなあ",-3],["絶対無理",-5]]},
+{q:"自分の見た目や性格に、ある程度満足していますか？",axis:"C",a:[["満足してる",5],["普通かな",3],["できてない",-3],["死んで来世に期待するレベル",-5]]},
+{q:"他の人と比べたときの気持ちは？",axis:"C",a:[["自分の方がいいなって思えることがほとんど",5],["まあ自分の方がいいって思うことが多いかな",3],["自分は劣っていると感じる",-3],["毎日比べすぎてしんどくなってくる",-5]]},
+{q:"相手が自分に優しくしてくれた時、どう感じる？",axis:"C",a:[["「相手も私の事好きなんじゃない！」ポジティブに考える",5],["「もしかして脈あり？」期待でどきどき",3],["「誰にでも優しいだけ...」と受け流す",-3],["「絶対違うんだよな...」とネガティブ思考",-5]]},
+{q:"誰かに褒められたときは？",axis:"C",a:[["当たり前だろ！！",5],["素直に受け取る",3],["お世辞かもと思ってしまう",-3],["この人は嘘をついていると思ってしまう自分に嫌気がさす",-5]]},
+
+{q:"学校生活の中で、異性のクラスメイトと話す機会がある？",axis:"R",a:[["気軽に話せる関係",5],["１日１回くらいは話す",3],["用事があるときぐらいしか話さない",-3],["全く話さないor周りに異性がいない",-5]]},
+{q:"新しく異性と知り合う機会がある？（学校・部活・遊びなど）",axis:"R",a:[["自分から新しい機会に行く",5],["きっかけがあれば ",3],["ほとんどない",-3],["まじでなんもない",-5]]},
+{q:"勉強や部活の忙しさをパーセントで表すと？",axis:"R",a:[["９０%",-5],["６０%",-3],["４０%",3],["１０% ",5]]},
+{q:"あなたの学校はどっち？",axis:"R",a:[["共学",5],["女子校",-5]]},
+{q:"あなたが普段過ごしているコミュニティーに男子はいる？",axis:"R",a:[["いる！",5],["いない！",-5]]}
+];
+
+
+// 最大スコアの計算
+let totalA_max=25, totalC_max=25, totalR_max=25; 
+
+function startTest() {
+  const input = document.getElementById("name");
+  name = input.value.trim();
+  if (name === "") {
+    input.classList.add("error-shake");
+    setTimeout(() => input.classList.remove("error-shake"), 300);
+    return;
+  }
+  document.getElementById("start").classList.add("hidden");
+  document.getElementById("quiz").classList.remove("hidden");
+  showQ();
+}
+
+function showQ(){
+  let q=questions[index];
+  document.getElementById("question").innerText=q.q;
+  let html="";
+  q.a.forEach(choice=>{
+    html+=`<button onclick="answer(${choice[1]})">${choice[0]}</button>`;
+  });
+  document.getElementById("choices").innerHTML=html;
+}
+
+function answer(score){
+  let axis=questions[index].axis;
+  if(axis==="A") A+=score;
+  if(axis==="C") C+=score;
+  if(axis==="R") R+=score;
+  index++;
+  index<questions.length?showQ():showResult();
+}
+
+function toPercent(score, max) {
+  return Math.round(((score + max) / (max * 2)) * 100);
+}
+
+// グラフ用HTML生成関数
+function createBarHTML(category, labelL, labelR, value, colorL, colorR) {
+  const activeTypeName = (value >= 50) ? labelL : labelR;
+  const activeColor = (value >= 50) ? colorL : colorR;
+  const displayPercent = (value >= 50) ? value : (100 - value);
+
+  return `
+  <div class="barBox">
+    <div class="barLabel">
+      <span class="categoryName">${category}：</span>
+      <span class="resultScore" style="color:${activeColor}">${displayPercent}% ${activeTypeName}</span>
+    </div>
+    <div class="bar2">
+      <div class="colorFill left" style="background:${colorL}; width:${value}%"></div>
+      <div class="colorFill right" style="background:${colorR}; width:${100 - value}%"></div>
+      <div class="indicator" style="border-color:${activeColor}; left:${value}%"></div>
+    </div>
+    <div class="axisLabels">
+      <span>${labelL}</span>
+      <span>${labelR}</span>
+    </div>
+  </div>`;
+}
+
+function showResult(){
+  document.getElementById("quiz").classList.add("hidden");
+  document.getElementById("result").classList.remove("hidden");
+
+  const judge = (x,pos,neg) => x >= 0 ? pos : neg;
+  currentType = judge(A,"A","P") + judge(C,"C","I") + judge(R,"R","L");
+
+  // 日本語名称のリスト
+  const typeNamesJP = {
+    ACR: "王者ライオンタイプ",
+    ACL: "眠れる白鳥タイプ",
+    AIR: "くるくる全力ハムスタータイプ",
+    AIL: "負けパンダタイプ",
+    PCR: "余裕かまし猫タイプ",
+    PCL: "高嶺の鹿タイプ",
+    PIR: "残念ウサギタイプ",
+    PIL: "マイペース亀タイプ"
+  };
+
+  document.getElementById("resultTitle").innerText = name + "さんの結果は…";
+  
+// タイトル部分：日本語名を主役に、アルファベットを「診断タイプ」らしく強調
+  document.getElementById("typeName").innerHTML = `
+    <span style="font-size: 40px; display: block; margin-bottom: 5px;">${typeNamesJP[currentType]}</span>
+    <span style="
+      font-size: 36px; 
+      -webkit-text-fill-color: #555; 
+      font-weight: 800; 
+      display: block; 
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    ">${currentType}</span>
+  `;
+
+  // 画像設定
+  const images = {
+    ACR: "IMG_4315.JPG",
+    ACL: "IMG_4318.JPG",
+    AIR: "IMG_4319.JPG",
+    AIL: "IMG_4315.JPG",
+    PCR: "IMG_4314.JPG",
+    PCL: "IMG_4315.JPG",
+    PIR: "IMG_4314.JPG",
+    PIL: "IMG_4315.JPG"
+  };
+  document.getElementById("resultImage").src = images[currentType] || images["ACR"];
+
+  // ※ ここにあなたの膨大な texts データを再配置してください
+  const texts = {
+   ACR:{
+desc:"このタイプは、恋愛において必要とされる要素である「積極性」「自己肯定感」「環境」のすべてが高い水準でそろっている、いわばかなり有利な立場にいるタイプ。",
+good:"まず積極性の面では、自分から人に話しかけたり距離を縮めたりすることに対して強い抵抗がなく、気になる相手がいれば自然な流れで関係を深めていくことができます。そのため、恋愛のスタートラインに立つこと自体が難しくなく、チャンスを自分で作り出せる力を持っています。さらに自己肯定感も高いため、「自分なんかが好かれるわけない」といったネガティブな思い込みに縛られにくく、相手と対等な関係を築こうとする姿勢を持っているのも特徴です。これによって、相手に対して過度に依存したり、自分を下げすぎたりすることが少なく、安定したコミュニケーションが取りやすい状態になっています。また環境面においても、人との関わりが多かったり、友人関係が広かったりと、出会いの機会に恵まれていることが多く、恋愛に発展する可能性のある接点が日常の中に存在しているケースが多いです。このように三つの要素がそろっているため、周囲からは「モテそう」「恋愛で困らなそう」と思われやすく、実際にあと一歩で関係が進展する場面も少なくありません。",
+bad:"一方で、強みがそろっているがゆえに、自分のペースで関係を進めすぎてしまうという側面もあります。自分にとっては自然な距離の詰め方でも、相手にとっては早すぎたり、気持ちが追いつかなかったりすることで、無意識のうちに温度差が生まれてしまうことがあります。また、選択肢が比較的多い環境にいるため、一人の相手に集中しきれず、「もっと合う人がいるのではないか」と考えてしまうこともあり、関係が深まる前に止まってしまうケースもあります。つまりこのタイプは、能力が不足しているのではなく、むしろ条件が整いすぎていることによってバランスを崩しやすいタイプであり、ほんの少しの調整によって恋愛の成功率が大きく変わる可能性を持っています。強みを活かしながらも、相手のペースや感情に目を向けることができれば、非常に安定した関係を築くことができるタイプです。",
+advice:"このタイプに必要なのは「頑張ること」じゃなくて、ちょっとだけコントロールすることです。まず意識してほしいのは、“自分のテンポ＝相手のテンポじゃない”ということ。自分が10で進めたいときでも、相手はまだ5くらいのこともあります。\n具体的には\n・好意は最初から全部出さずに、ちょっと抑える\n・相手の返信速度やテンションに合わせる\n・会話で「聞く側」に少し寄る。\nこれだけでかなり印象が変わります。もう一つ大事なのは、「選べる立場」だからこそ雑にしないことです。選択肢が多いと無意識に一人一人への向き合い方が浅くなりやすい。でも、ちゃんと一人に向き合えたときこのタイプは輝くことができます。つまり、あなたは「できることを減らす」ことが成長になるタイプです。ちょっと抑えるだけで一気に“安定してモテる側”に入ります。"
+},
+ACL:{
+desc:"このタイプは、一言でいうと「ポテンシャルは高いのに、それを発揮する場が足りていない」かなりもったいない状態にいるタイプ",
+good:"恋愛に必要な要素である積極性・自己肯定感・環境のうち、特に環境の部分が不足していることが大きな特徴であり、それ以外の要素については極端に低いわけではありません。むしろ、人と話すこと自体はそこまで苦手ではなかったり、相手に対して思いやりを持って接することができたりと、関係性を築く上で必要な素質は十分に持っているケースが多いです。",
+bad:"日常生活の中で関わる人の範囲が固定されていたり、新しい人と出会う機会が少なかったりすることで、そもそも恋愛が始まる“きっかけ”が圧倒的に不足しています。そのため、「いい人がいない」と感じやすくなり、恋愛に対して消極的になってしまうこともありますが、実際には“いない”のではなく“出会っていないだけ”という状態であることがほとんどです。また、このタイプは自分の魅力や良さに対して極端に自信がないわけではないものの、経験値が少ないことによって「自分は恋愛に向いていないのではないか」と誤解してしまうこともあります。さらに、環境が限られている中で数少ないチャンスに直面した場合、「ここで失敗したら次がないかもしれない」というプレッシャーを感じやすくなり、結果として行動できなくなることもあります。このように、環境の不足が行動や思考にも影響を与え、恋愛の機会をさらに減らしてしまうという構造が生まれやすいのがこのタイプの特徴です。ただし、この状態は裏を返せば「環境さえ変われば一気に状況が動く可能性が高い」ということでもあり、自分自身を大きく変える必要がないという点では非常に伸びしろのあるタイプでもあります。恋愛がうまくいかない原因が内面ではなく外的要因にあることが多いため、適切な場所や人との接点を持つことができれば、自然な形で関係が進展していく可能性を十分に持っています。",
+advice:"このタイプはシンプルに、「自分を変える前に場所を変える」が大切です。今のまま同じ環境にいても大きく状況は変わりにくいので、意識して“人と出会う回数”を増やしていきましょう。\n具体的には\n・週1回は新しい人と話す（クラス以外、バイト、友達の友達でもOK）\n・誘われたら基本一回は行ってみる\n・いつもと違うグループにちょっとだけ混ざる\nここで大事なのは「恋愛しよう」と思わないことです。まずは“人と関わる数を増やす”ところから始めましょう。このタイプは「経験不足＝自分がダメ」って勘違いしやすいですが実際は全然違います。 ただ試行回数が少ないだけです。つまり、あなたは環境が変わった瞬間に一気に流れが変わるタイプだから、“勇気出して1回違う場所に行く” が一番効くアクションになります。"
+},
+AIR:{
+desc:"このタイプは、「行動力はあるのに結果につながりにくい」という特徴を持っている、いわゆる“努力の方向が少しズレている”タイプ。",
+good:"恋愛に対して前向きであり、自分から関係を作ろうとする意欲も強く、実際に行動に移すこともできています。例えば、気になる人に話しかけたり、自分から連絡を取ったり、相手との距離を縮めようと努力する姿勢はしっかり持っているため、周囲から見ても「ちゃんと頑張っている人」という印象を持たれることが多いです。",
+bad:"あなたの行動が必ずしも相手の気持ちや状況に合っているとは限らず、結果として関係がうまく進まないケースが多くなります。例えば、相手の反応がまだそこまで高くない段階で積極的にアプローチしすぎてしまったり、連絡の頻度が高くなりすぎて相手に負担を感じさせてしまったりと、良かれと思ってやっていることが逆効果になることがあります。また、このタイプは「努力すれば結果が出る」という考えを持っていることが多いため、うまくいかなかったときにさらに頑張ろうとしてしまい、結果的に空回りが強まるというループに入りやすいのも特徴です。さらに、相手の気持ちを想像することが苦手なわけではないものの、自分の行動に意識が向きすぎることで、相手の温度感とのズレに気づきにくくなってしまうことがあります。そのため、「こんなに頑張っているのにどうしてうまくいかないのか」と感じやすく、そこから自己肯定感が下がってしまうこともあります。しかし実際には、このタイプは行動力という大きな強みを持っており、それ自体は恋愛において非常に有利な要素です。問題は“行動していること”ではなく、“行動のタイミングと量の調整”にあるため、その部分を少し修正するだけで一気に結果が変わる可能性を持っています。つまりこのタイプは、能力不足ではなく「コントロール不足」によって結果が出にくくなっている状態であり、やり方を整えることで大きく伸びるタイプだと言えます。",
+advice:"このタイプに一番効くのは、「やる量を減らして、間を取ること」です。今はちょっと頑張りすぎてる状態なので、むしろ引いたほうがうまくいきます。\n具体的には\n・LINEは送ったら“相手の返信ペース”に合わせる\n・誘いは1回出したら追加で押さない\n・会話も「もうちょい話したい」で止める\nポイントは「1アクション→待つ」こと。大事なことは、 “うまくいかない＝自分がダメ”じゃないってことです。 恋愛ってタイミングと相性がかなり大きいから、頑張りだけではどうにもならない部分もあります。このタイプは“行動できる”っていう強い武器があるから、 それを少し整えるだけで一気に結果が変わります。"
+},
+AIL:{
+desc:"このタイプは、「ちゃんと考えて行動しているのに、なぜか結果につながりにくい」と感じやすい、少し不思議なズレを抱えているタイプ",
+good:"「くるくる全力ハムスタータイプ」と似ている部分もありますが、こちらは“行動量が多すぎる”というよりも、“努力の方向性が微妙に噛み合っていない”ことが多いのが特徴です。自分なりに相手のことを考えて行動したり、嫌われないように気を遣ったり、丁寧に関係を築こうとしたりと、一つ一つの行動自体はむしろ誠実で真面目なものが多いです。そのため、周囲からは「いい人だよね」と評価されることも少なくありません。",
+bad:"あなたは“いい人”として終わってしまい、恋愛として発展しにくいのがこのタイプの難しさです。例えば、相手に合わせすぎて自分の意見をあまり出さなかったり、嫌われることを避けるあまり無難な対応に終始してしまったりすることで、結果として「印象に残らない人」になってしまうことがあります。また、自分の中ではしっかりと気持ちを持っているにもかかわらず、それを相手に伝えるタイミングや表現が控えめすぎて、好意が伝わらないまま終わってしまうこともあります。さらに、このタイプは「ちゃんとやればうまくいくはず」という考えを持っていることが多いため、結果が出ないと「自分のやり方が間違っているのではないか」と悩みやすく、そこからさらに慎重になりすぎるというループに入りやすいです。しかし実際には、やっていること自体が悪いわけではなく、“少しだけ踏み込みが足りない”ことや、“相手に伝わる形になっていない”ことが原因である場合がほとんどです。つまりこのタイプは、努力が無駄になっているのではなく、「あと一歩の表現や押し」が足りていないことで結果につながりにくくなっている状態であり、その一歩を補うことができれば大きく変わる可能性を持っています。真面目さや思いやりという強みがある分、それを恋愛として成立させるための“伝え方”が鍵になるタイプです。",
+advice:"このタイプは、「良い子でいる」のはもう十分だから、“ちょっとだけわがままになる”のが恋愛でのキーになります。今は相手に合わせすぎているので、印象が薄くなっている状況です。\n具体的には\n・自分の意見を1つはちゃんと言う\n・「会いたい」とか気持ちを言葉にする\n・たまに軽く主導権を取る（お店決めるとか）\n大事なのは、 “いい人＝恋愛対象になる”じゃないって相手をちょっとドキッとさせる要素を作ること。怖いかもだけど、ほんの少し踏み込むだけでOK。あなたのベースは十分良いので、 “伝え方を変えるだけで一気に恋愛に変わる”タイプです。"
+},
+PCR:{
+desc:"このタイプは、「余裕もあるし魅力もあるのに、自分から動かないことでチャンスを逃しやすい」かなりもったいないポジションにいるタイプです。",
+good:"自己肯定感は比較的安定していて、自分に対して極端にネガティブな見方をすることは少なく、人と関わること自体にも大きな苦手意識はありません。また、周囲との関係性も悪くなく、友達関係や日常のコミュニティの中で一定の居場所を持っていることが多いため、恋愛に発展しうる“土台”はしっかり整っています。さらに、落ち着いた雰囲気や安心感を持っていることが多く、相手からすると「一緒にいて楽」「無理しなくていい」と感じられる存在になりやすいのもこのタイプの強みです。",
+bad:"しかし、安定感や余裕があるがゆえに、「自分から積極的に関係を動かそうとする意識」が弱くなりやすく、結果として恋愛のきっかけを逃してしまうことが多くなります。例えば、気になる人がいても「そのうちタイミングが来るだろう」と考えて何もせずに待ってしまったり、相手からのアプローチに対しても控えめな反応しか返さなかったりすることで、相手から「脈がなさそう」と判断されてしまうことがあります。また、感情表現があまり表に出ないため、自分の中では好意を持っていても、それが相手に伝わりにくいという問題もあります。その結果、「いい人止まり」や「何を考えているかわからない人」という印象を持たれてしまい、関係が進展する前に終わってしまうケースが出てきます。このタイプは決して恋愛に向いていないわけではなく、むしろ安定した関係を築く力を持っているにもかかわらず、“動かなさ”と“伝わらなさ”によってチャンスを逃してしまっている状態です。裏を返せば、ほんの少しだけ行動や表現を増やすだけで、一気に恋愛の流れに乗ることができるポテンシャルを持っているタイプでもあります。無理に性格を変える必要はなく、「今の自分に少しだけプラスする」ことができれば、大きく状況が変わる可能性があります。",
+advice:"このタイプはあと一歩踏み出すだけで変わるタイプです。 “少しアピール”を入れるだけでかなり変わります。\n具体的には\n・「楽しかった！」をちゃんと口に出す\n・自分から1回だけ話しかける\n・リアクションをほんの少し大きくする\nこれだけで相手から見た印象がかなり変わります。あなたに知っていて欲しいことは、“待ってるだけだと伝わらない”ってことです。 自分の中では好意があっても、相手にはゼロに見えてることが普通にあります。このタイプは“ベース強い”から、 ガツガツする必要はありません。ほんとにちょっとで大丈夫です。あなたは「0→1のサインを出す」 これだけで恋愛がちゃんと動き出すタイプです。"
+},
+PCL:{
+desc:"このタイプは、「理想はあるけど、それを下げられないことで恋愛のチャンスを自分で狭めてしまう」タイプです。",
+good:"恋愛に対してしっかりとしたイメージや憧れを持っていることが多く、「こういう人がいい」「こういう関係が理想」という軸がはっきりしているのが特徴です。一見するとそれはとても良いことに思えますし、実際に自分の価値観を大切にできるという意味では強みでもあります。",
+bad:"しかし、理想が少し高かったり、条件として固定されすぎていたりすると、現実とのズレが大きくなりやすくなります。例えば、見た目や性格、行動の仕方などに対して「ここはこうじゃないと嫌だ」という基準が多くなってしまい、少しでも外れると「なんか違う」と感じてしまうことがあります。また、完璧に近い相手を無意識に求めてしまうことで、「いい人なんだけど決め手がない」という理由で関係を進めないまま終わらせてしまうケースも多くなります。このタイプは決して人を見る目が厳しいわけではなく、むしろ「ちゃんと好きになりたい」「納得できる相手と付き合いたい」という思いが強いからこそ、簡単に妥協できないという側面があります。ただ、その結果として“出会いの数に対して恋愛に発展する割合が極端に低くなる”という状況に陥りやすいです。さらに、理想を大切にするあまり、相手の良い部分よりも「足りない部分」に目が向きやすくなり、関係が深まる前に自分の中で評価を下げてしまうこともあります。また、理想通りの人が現れるまで待つスタンスになりがちなため、受け身になりやすく、恋愛の経験自体が少なくなることもあります。このタイプは「理想があること自体」は悪いことではありませんが、それを“絶対条件”としてしまうことで、自分の可能性を狭めてしまっている状態です。本来はもっと柔軟に関係を築ける力があるにもかかわらず、「理想とのズレ」を気にしすぎることで恋愛のスタートラインに立てなくなってしまっているのが特徴です。",
+advice:"このタイプは、“減点方式をやめる”のが大事です。今は「ここ違うな…」と思う時もあるかもしれませんが、 恋愛はあとから好きになることも多いです。\n具体的には\n・最初から100点を求めない（60点でもOKにする）\n・「いいところ3つ探す」を意識する\n・1回で判断せず、2〜3回会ってから決める\n大事なことは、 “理想はゴールであってスタートじゃない”ってことです。 最初から理想通りの人に出会うのってかなりレアな状況。このタイプは目がいいからこそ、 “伸びしろを見る力”を持てると一気に変わります。ちょっとゆるく見るだけで、「え、こんなにいい人いたんだ」と感じることも。"
+},
+PIR:{
+desc:"このタイプは慎重で冷静に状況を判断でき、感情に流されにくいタイプです。",
+good:"相手の気持ちやタイミングをしっかり見極めようとするため、無理な恋愛に進みにくく、関係が始まれば誠実で安定しやすい傾向があります。また、チャンスや好意に気づける観察力もあり、本来は恋愛の流れに乗る力を持っています。",
+bad:"一方で、このタイプは慎重さが強く出すぎることで、「動かない理由」を自分の中で作ってしまいやすい傾向があります。「もう少し様子を見よう」「確実なタイミングで動こう」と考えているうちに、恋愛において重要な“勢い”や“タイミング”を逃してしまうことが多くなります。また、失敗を避けたい気持ちが強いため、「断られるかもしれない」「変に思われたくない」といった不安が先に立ち、行動そのものを止めてしまうことがあります。その結果、実際には可能性があった関係も始まらないまま終わってしまうケースが増えてしまいます。さらに、「確実性」を求めすぎるあまり、恋愛の不確実さを受け入れにくくなっている点も特徴です。本来、恋愛はやってみないと分からない部分が大きいにもかかわらず、成功の見込みが高いと感じられる場面まで待とうとするため、ほとんどのチャンスが見送りになってしまいます。そして、過去の失敗や恥ずかしい経験が無意識のブレーキになり、「また同じことになるかもしれない」という思考が行動を鈍らせることもあります。この積み重ねによって経験が増えず、自信もつきにくくなり、「動けない→経験がない→さらに動けない」というループに入りやすいのが大きな弱点です。",
+advice:"このタイプは“70％で動く”をルールにすることがポイントです。今は「確信が持てたら動く」になってるけど、それだと動けないことが多いです。\n具体的には \n・ちょっとでも「いいかも」と思ったらOKする \n・誘われたら基本YES（無理なときだけNO） \n・迷ったら“やる方”を選ぶ\nこのタイプにとって大事なことは“タイミングは待つものじゃなくて作るもの”と言う意識を持つことです。完璧な瞬間なんて来ないから、 自分で動いたときがタイミングになります。このタイプは本当に惜しいです。 チャンスはもう来てるから、あとは掴むだけ。ちょっと勇気を出すだけで、 恋愛が一気に動き出します。"
+},
+PIL:{
+desc:"このタイプは「今のままで困っていない」という感覚があるため、恋愛をしないことに対して強い焦りを感じにくく、そのまま時間が過ぎていくことも多いタイプ",
+good:"本当は「いい人がいれば恋愛したい」「楽しい恋愛をしてみたい」という気持ちが心のどこかに残っていることも多く、その気持ちに気づいたときにどう動くかが大きな分かれ目になります。このタイプは恋愛に向いていないわけではなく、むしろ落ち着いた関係を築く力や自分を大切にする力を持っています。ただし、距離を置く癖が強くなりすぎると、せっかくの出会いや可能性を自分から遠ざけてしまうことになります。つまりこのタイプは、「恋愛を避けている」というよりも、「無意識に遠ざけてしまっている」状態であり、その距離をほんの少し縮めることができれば、新しい関係が自然と生まれてくる可能性を持っています。",
+bad:"気になる人ができても自分から距離を縮めることはあまりなく、相手からのアプローチに対しても一歩引いた対応をしてしまい、関係が深まる前に終わってしまうことがあります。また、このタイプは、「恋愛に対して興味がないわけではないのに、気づいたら距離を置いてしまっている」タイプです。過去に恋愛でうまくいかなかった経験があったり、人間関係で少し疲れてしまったことがあったりすると、「もういいかな」「今はいいや」と思うようになり、そのまま恋愛から自然と離れていく傾向があります。また、恋愛以外に優先したいものがある場合、たとえば友達関係や趣味、勉強や自分の時間などが充実していると、「わざわざ恋愛しなくても今楽しいし」と感じやすく、恋愛の優先順位が下がっていくこともあります。このタイプは無理に誰かに依存することが少なく、自立しているとも言える一方で、「誰かと深く関わること」に対して少し慎重になっている側面もあります。さらに、恋愛に対して理想や期待が全くないわけではないのですが、「どうせうまくいかないかも」「めんどくさいことになるかも」というネガティブなイメージが先に浮かびやすく、それが行動のブレーキになっていることもあります。",
+advice:"このタイプは、いきなり恋愛しようとしなくて、ハードル高くしすぎてるから動けなくなってる。\n具体的には\n・まずは「ちょっと話す人」を増やす\n・1対1じゃなくてグループで関わる\n・恋愛じゃなくて人として興味持つから始める\nこのタイプで意識したほうがいいことは、好きになる前に関係は始まっていいということ。「好きになれそうか」で判断すると動けなくなります。無理に変わらなくていいけど、ほんの少しだけ距離を縮める意識を持つと、気づいたら「あれ、普通に好きかも」ってなることがある。"
+}
+};
+
+  const t = texts[currentType] || texts["ACR"];
+  document.getElementById("desc").textContent = t.desc;
+  document.getElementById("good").textContent = t.good;
+  document.getElementById("bad").textContent = t.bad;
+  document.getElementById("advice").textContent = t.advice;
+
+  // グラフ描画
+  const A_per = toPercent(A, totalA_max);
+  const C_per = toPercent(C, totalC_max);
+  const R_per = toPercent(R, totalR_max);
+
+  const graphArea = document.getElementById("graph");
+  graphArea.innerHTML = 
+    createBarHTML("行動", "  A（積極型）", "  P（消極型）", A_per, "#ff6b9a", "#6bbcff") +
+    createBarHTML("自信", "  C（自信あり）", "  I（自信なし）", C_per, "#ffb86b", "#9b6bff") +
+    createBarHTML("環境", "  R（環境十分）", "  L（環境不足）", R_per, "#4cd97b", "#ff6b6b");
+}
+
+function copyResult() {
+  const text = `${name}さんの診断結果は【${currentType}】でした！\n#彼氏ができない原因診断`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("結果をコピーしました！SNSに貼り付けてね！");
+  });
+}
+</script>
+</body>
+</html>
