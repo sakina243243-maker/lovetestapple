@@ -7,6 +7,98 @@
 <title>なんでモテん診断</title>
 
 <style>
+
+/* ポップアップ全体の背景（暗くなる部分） */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6); /* 背景を黒の半透明に */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* 一番手前に来るように */
+}
+
+/* ×ボタン（丸囲み・右端配置） */
+.modal-close {
+  position: absolute;
+  top: -15px;
+  right: -15px;
+  width: 35px;
+  height: 35px;
+  background: #fff;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  font-size: 20px;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  z-index: 10;
+}
+
+/* 窓を大きく、魅力的なデザインに修正 */
+.modal-content {
+  background: white;
+  padding: 40px 20px; /* 上下の余白を広げてゆったり */
+  border-radius: 30px; /* 角をもっと丸くして親しみやすく */
+  width: 90%;
+  max-width: 450px; /* 横幅を大きく設定 */
+  position: relative;
+  text-align: center;
+  border: 4px solid #ff9ad5; /* 窓枠に診断カラーのピンクを細く入れる */
+  animation: modalIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* 「.modal-content」の中にある「h3」すべてに適用するよう修正 */
+.modal-content h3 {
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  display: inline-block; /* グラデーションの範囲を文字幅に限定 */
+  
+  /* グラデーション設定 */
+  background: linear-gradient(90deg, #ff6b9a, #6bbcff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* 万が一反映されないブラウザ用の予備色 */
+  color: #ff6b9a; 
+}
+
+/* 案内文を読みやすく */
+.modal-body p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 25px;
+}
+
+/* 回答ボタンをもっと目立たせる */
+.modal-btn {
+  display: block;
+  background: linear-gradient(90deg, #ff6b9a, #ff9ad5); /* より濃いピンクで目立たせる */
+  color: white !important;
+  padding: 18px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  box-shadow: 0 10px 20px rgba(255, 107, 154, 0.3);
+  transition: 0.3s;
+}
+
+.modal-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px rgba(255, 107, 154, 0.4);
+}
+
 /* --- 基本レイアウト --- */
 body{
 margin:0;
@@ -371,13 +463,14 @@ img {
     <div class="section" style="animation-delay:0.6s;"><b>あなたの弱点</b><p id="bad"></p></div>
     <div class="section" style="animation-delay:0.8s;"><b>アドバイス</b><p id="advice"></p></div>
 
-<a href="https://forms.gle/jbtjXMtidgLBtDqs5" target="_blank" class="enqueteLink">
-  📋 みんなの結果集計中！アンケートにご協力ください 💖
-</a>
-
    <br>
     <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする</button>
-    <button class="retryBtn" onclick="location.reload()">もう一度診断する</button>
+    <button class="retryBtn" onclick="openModal()">もう一度診断する</button>
+<p style="margin-top: 20px;">
+  <a href="javascript:void(0)" onclick="openModal()" style="color: #888; font-size: 18px; text-decoration: underline;">
+    診断の感想を送る💘
+  </a>
+</p>
 
 
   </div>
@@ -507,9 +600,9 @@ function showResult(){
 
   // 画像設定
   const images = {
-    ACR: "IMG_4315 3.jpg",
-    ACL: "IMG_4318 3.jpg",
-    AIR: "IMG_4319 3.jpg",
+    ACR: "IMG_4315_3.jpg", // スペースをアンダースコアにするか、実際のファイル名に厳密に合わせる
+    ACL: "IMG_4318_3.jpg",
+    AIR: "IMG_4319_3.jpg",
     AIL: "IMG_4342.jpg",
     PCR: "IMG_4341.jpg",
     PCL: "IMG_4339.jpg",
@@ -588,12 +681,54 @@ advice:"ここのタイプは、いきなり恋愛しようとしなくて、ハ
     createBarHTML("環境", "  R（環境十分）", "  L（環境不足）", R_per, "#4cd97b", "#ff6b6b");
 } // ← この閉じカッコが抜けていました
 
+// 1. まず、この一行を関数の外（一番上か、関数の直前）に追加
+let hasClosedSurvey = false; 
+
+// 2. openModal をこれに書き換え
+function openModal() {
+  if (hasClosedSurvey) {
+    location.reload(); // すでに閉じたことがあれば、窓を出さずにリロード
+    return;
+  }
+  document.getElementById("surveyModal").classList.remove("hidden");
+}
+
+// 3. closeModal をこれに書き換え
+function closeModal() {
+  document.getElementById("surveyModal").classList.add("hidden");
+  hasClosedSurvey = true; // 「一度閉じた」という記録をつける
+}
+
+// 4. (もしあれば) realRetry 関数などは消しても大丈夫です
+
+// 結果をコピーする機能
 function copyResult() {
-  const text = `${name}さんの診断結果は【${currentType}】でした！\n#彼氏ができない原因診断`;
+  const typeName = document.querySelector(".type-jp").innerText;
+  const typeEn = document.querySelector(".type-en").innerText;
+  const text = `${name}さんの診断結果は…\n【${typeName} (${typeEn})】でした！\n#なんでモテん診断`;
+  
   navigator.clipboard.writeText(text).then(() => {
-    alert("結果をコピーしました！SNSに貼り付けてね！");
+    alert("結果をコピーしました！SNSに貼り付けてね✨");
   });
 }
+
+  
 </script>
+
+<div id="surveyModal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-body">
+      <h3>📋 アンケートのお願い</h3> 
+      <p style="font-size: 20px; color: #666;">
+        みんなの結果集計中！！<br>ぜひご協力お願いします！💖
+      </p>
+      <a href="https://forms.gle/jbtjXMtidgLBtDqs5" target="_blank" class="modal-btn" onclick="closeModal()">
+        アンケートに回答する
+      </a>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
