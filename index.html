@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>なんでモテん診断</title>
+<meta name="description" content="なぜかモテない理由をズバッと診断！15の質問であなたの恋愛傾向を可視化します。片思い・出会いがない・自分に自信がない…そんな悩みのヒントが見つかるかも。">
 
 <style>
 
@@ -430,6 +431,7 @@ img {
 
 
 </style>
+
 </head>
 
 <body>
@@ -467,8 +469,8 @@ img {
     <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする</button>
     <button class="retryBtn" onclick="openModal()">もう一度診断する</button>
 <p style="margin-top: 20px;">
-  <a href="javascript:void(0)" onclick="openModal()" style="color: #888; font-size: 18px; text-decoration: underline;">
-    診断の感想を送る💘
+  <a href="javascript:void(0)" onclick="openModal()" style="color: #ff6b9a; font-size: 18px; text-decoration: underline;">
+    結果のアンケートに答える💘
   </a>
 </p>
 
@@ -599,7 +601,7 @@ function showResult(){
   `;
 
   // 画像設定
- const images = {
+  const images = {
     ACR: "IMG_4315 3.jpg", // スペースをアンダースコアにするか、実際のファイル名に厳密に合わせる
     ACL: "IMG_4318 3.jpg",
     AIR: "IMG_4319 3.jpg",
@@ -705,11 +707,12 @@ function closeModal() {
 // 結果をコピーする機能
 function copyResult() {
   const typeName = document.querySelector(".type-jp").innerText;
-  const typeEn = document.querySelector(".type-en").innerText;
-  const text = `${name}さんの診断結果は…\n【${typeName} (${typeEn})】でした！\n#なんでモテん診断`;
+  const url = window.location.href; 
+  // 思わずクリックしたくなる文章に改造
+  const text = `【結果】私の恋愛タイプは...＼ ${typeName} ／でした！\n\n彼氏ができない原因がわかっちゃうかも🫢\nここで診断できるよ↓\n${url}\n#なんでモテん診断 #恋愛診断`;
   
   navigator.clipboard.writeText(text).then(() => {
-    alert("結果をコピーしました！SNSに貼り付けてね✨");
+    alert("結果をコピーしました！みんなにシェアしよう✨");
   });
 }
 
