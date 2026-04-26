@@ -396,18 +396,20 @@ img {
 /* スマホ向けの調整 */
 @media (max-width: 600px) {
   body {
-    /* 上詰めをやめて、上下中央に配置されるように戻す */
-    align-items: center; 
-    padding: 10px 0;
-    /* スマホで高さが足りない場合に備えて最小高さを設定 */
-    height: auto;
+    align-items: flex-start; /* centerからflex-startに変更 */
+    padding: 20px 0;
+    height: auto;           /* 必須：高さを自動にする */
     min-height: 100vh;
+    overflow-y: visible;    /* 必須：スクロールを許可 */
   }
   .container {
-    padding: 30px 20px; /* 左右にしっかり余白を作る */
-    width: 85%;         /* 画面の端から少し離す */
-    max-width: 320px;   /* 小さなスマホでもはみ出ないように */
-    margin: 20px auto;  /* 上下に少し隙間を作る */
+    padding: 30px 20px;
+    width: 85%;
+    max-width: 400px;
+    margin: 20px auto;      /* 必須：上下に余白を作る */
+    height: auto;           /* 必須：固定しない */
+    max-height: none;       /* 必須：制限を解除 */
+    overflow-y: visible;    /* 必須：箱の中でスクロールさせない */
   }
   .title {
     font-size: 20px;
@@ -702,14 +704,20 @@ function closeModal() {
 }
 
 // スクロールを監視する設定（Intersection Observer）
+// スクロールを監視する設定（Intersection Observer）
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
-    // 監視対象（もう一度診断するボタン）が10%以上画面に見えたら実行
+    // 画面に「もう一度やる」ボタンが少しでも入ってきたら
     if (entry.isIntersecting && !hasClosedSurvey) {
       openModal();
+      // 一度表示したら、何度も出ないように見張りをやめる
+      observer.unobserve(entry.target);
     }
   });
-}, { threshold: 0.1 });
+}, { 
+  root: null,      /* 画面全体を基準にする */
+  threshold: 0.01  /* 1%でもボタンが見えたら即座に実行 */
+});
 
 // ボタンの監視を開始する関数
 function startScrollSpy() {
