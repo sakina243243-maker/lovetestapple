@@ -101,14 +101,14 @@
 }
 
 /* --- 基本レイアウト --- */
-body{
-margin:0;
-font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
+body {
+  margin: 0;
+  font-family: "Hiragino Maru Gothic ProN", "Hiragino Sans", "Meiryo", sans-serif;
   background: linear-gradient(135deg, #ffd6ec, #d6f0ff);
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* ← ここを変更：上詰めにします */
-  min-height: 100vh;      /* ← ここを変更：最低100%にします */
+  align-items: center;    /* flex-start から center に戻す */
+  min-height: 100vh;
   color: #333;
 }
 
@@ -396,20 +396,18 @@ img {
 /* スマホ向けの調整 */
 @media (max-width: 600px) {
   body {
-    align-items: flex-start; /* centerからflex-startに変更 */
+    /* align-items: center のままでOK（中身が画面より長くなると自動で上からになります） */
     padding: 20px 0;
-    height: auto;           /* 必須：高さを自動にする */
-    min-height: 100vh;
-    overflow-y: visible;    /* 必須：スクロールを許可 */
+    height: auto; 
   }
   .container {
     padding: 30px 20px;
     width: 85%;
     max-width: 400px;
-    margin: 20px auto;      /* 必須：上下に余白を作る */
-    height: auto;           /* 必須：固定しない */
-    max-height: none;       /* 必須：制限を解除 */
-    overflow-y: visible;    /* 必須：箱の中でスクロールさせない */
+    margin: 20px auto; 
+    height: auto;        /* 必須：固定しない */
+    max-height: none;    /* 必須：制限を解除 */
+    overflow-y: visible; /* 必須：スクロールを許可 */
   }
   .title {
     font-size: 20px;
