@@ -766,6 +766,18 @@ function closeModal() {
   }
 }
 
+// アンケート回答ボタンを押した時の処理
+function answerAndReload() {
+  // 1. ボタン経由での操作であることを記録（これがないとリロードされません）
+  isManualOpen = true; 
+  
+  // 2. 0.5秒後に closeModal を実行してリロードさせる
+  // （即座にリロードするとアンケートページが開かないことがあるため）
+  setTimeout(() => {
+    closeModal();
+  }, 500); 
+}
+
 // スクロールを監視する設定（Intersection Observer）
 // スクロールを監視する設定（Intersection Observer）
 const observer = new IntersectionObserver((entries) => {
@@ -814,9 +826,9 @@ function copyResult() {
       <p style="font-size: 20px; color: #666;">
         みんなの結果集計中！！<br>ぜひご協力お願いします！💖
       </p>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSep82S8CdGrPXA1CoeXsP9HpzySO_Junsv-g3CJfz8WcpD_DA/viewform?usp=publish-editor" target="_blank" class="modal-btn" onclick="closeModal()">
-        アンケートに回答する
-      </a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSep82S8CdGrPXA1CoeXsP9HpzySO_Junsv-g3CJfz8WcpD_DA/viewform?usp=publish-editor" target="_blank" class="modal-btn" onclick="answerAndReload()">
+  アンケートに回答する
+</a>
     </div>
   </div>
 </div>
