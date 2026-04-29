@@ -467,7 +467,7 @@ img {
     <div id="choices"></div> 
     
     <button id="backBtn" onclick="goBack()" class="back-btn-styled" style="display:none;">
-      <span>←</span> 1つ前へ
+      <span>←</span>前の質問へ
     </button>
   </div>
 
@@ -485,10 +485,10 @@ img {
 
     <br>
     <button class="shareBtn" onclick="copyResult()">✨結果をコピーしてシェアする</button>
-    <button class="retryBtn" onclick="location.reload()">✨もう一度診断する</button>
+    <button class="retryBtn" onclick="openModal(true)">✨もう一度診断する</button>
 
     <p style="margin-top: 20px;">
-      <a href="https://forms.gle/jbtjXMtidgLBtDqs5" target="_blank" style="color: #ff6b9a; font-size: 18px; text-decoration: underline;">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSep82S8CdGrPXA1CoeXsP9HpzySO_Junsv-g3CJfz8WcpD_DA/viewform?usp=publish-editor" target="_blank" style="color: #ff6b9a; font-size: 18px; text-decoration: underline;">
         結果のアンケートに答える💘
       </a>
     </p>
@@ -742,17 +742,28 @@ advice:"ここのタイプは、いきなり恋愛しようとしなくて、ハ
 // スクリプトの終わりの方に貼り付けてください
 // アンケートを閉じたかどうかの記録
 let hasClosedSurvey = false; 
+let isManualOpen = false; // ★追加：ボタンを押して開いたかどうかの目印
 
 // 窓を開く関数
-function openModal() {
-  if (hasClosedSurvey) return; // すでに閉じていたら何もしない
+function openModal(manual = false) { // manualという引数を受け取れるようにする
+  if (manual) {
+    isManualOpen = true; // ボタンから開いた場合はtrue
+  } else if (hasClosedSurvey) {
+    return; 
+  }
   document.getElementById("surveyModal").classList.remove("hidden");
 }
 
-// 窓を閉じる関数
 function closeModal() {
   document.getElementById("surveyModal").classList.add("hidden");
-  hasClosedSurvey = true; // 閉じた記録を付ける
+  
+  if (isManualOpen) {
+    // ボタンから開いた時だけ最初に戻る
+    location.reload(); 
+  } else {
+    // 自動で出た時は、次から自動で出ないように記録して終わり
+    hasClosedSurvey = true; 
+  }
 }
 
 // スクロールを監視する設定（Intersection Observer）
@@ -761,10 +772,9 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     // 画面に「もう一度やる」ボタンが少しでも入ってきたら
     if (entry.isIntersecting && !hasClosedSurvey) {
-      openModal();
-      // 一度表示したら、何度も出ないように見張りをやめる
-      observer.unobserve(entry.target);
-    }
+  openModal(); // ここはカッコの中は空っぽ（false扱い）でOK
+  observer.unobserve(entry.target);
+}
   });
 }, { 
   root: null,      /* 画面全体を基準にする */
@@ -804,7 +814,7 @@ function copyResult() {
       <p style="font-size: 20px; color: #666;">
         みんなの結果集計中！！<br>ぜひご協力お願いします！💖
       </p>
-      <a href="https://forms.gle/jbtjXMtidgLBtDqs5" target="_blank" class="modal-btn" onclick="closeModal()">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSep82S8CdGrPXA1CoeXsP9HpzySO_Junsv-g3CJfz8WcpD_DA/viewform?usp=publish-editor" target="_blank" class="modal-btn" onclick="closeModal()">
         アンケートに回答する
       </a>
     </div>
